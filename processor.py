@@ -66,14 +66,56 @@ def transpose(rows, cols, type):
             print(''.join(matrix[row]))
 
 
+def copy_matrix(M):
+    rows = len(M)
+    cols = len(M[0])
+
+    MC = []
+    for i in range(rows):
+        MC.append([])
+        for j in range(cols):
+            MC[i].append(0.0)
+
+    for i in range(rows):
+        for j in range(cols):
+            MC[i][j] = M[i][j]
+
+    return MC
+
+
+def determinant(M, total=0):
+    indices = list(range(len(M)))
+
+    if len(M) == 2 and len(M[0]) == 2:
+        return M[0][0] * M[1][1] - M[0][1] * M[1][0]
+    elif len(M) == 1:
+        return M[0][0]
+
+
+    for fc in indices:
+        Ms = copy_matrix(M)
+        Ms = Ms[1:]
+        height = len(Ms)
+
+        for i in range(height):
+            Ms[i] = Ms[i][0:fc] + Ms[i][fc + 1:]
+
+        sign = (-1) ** (fc % 2)
+        sub_det = determinant(Ms)
+        total += sign * M[0][fc] * sub_det
+
+    return total
+
+
+
 running = True
 while running:
     matrixA = []
     matrixB = []
     matrixC = []
 
-    choice = input("1. Add matrices\n2. Multiply matrix by a constant\n3. Multiply matrices\n4. Transpose matrix\n0. "
-                   "Exit\nYour choice: ")
+    choice = input("1. Add matrices\n2. Multiply matrix by a constant\n3. Multiply matrices\n4. Transpose matrix\n"
+                   "5. Calculate a determinant\n0. Exit\nYour choice: ")
 
     if choice == '1':
         numbers = input("Enter size of the first matrix: ").split()
@@ -180,6 +222,19 @@ while running:
             print("The result is: ")
             transpose(rowA, colA, "horizontal")
             print()
+
+    elif choice == '5':
+        numbers = input("Enter matrix size: ").split()
+        rowA = int(numbers[0])
+        colA = int(numbers[1])
+        print("Enter matrix: ")
+        for i in range(rowA):
+            matrixA.append([])
+            numbers = input().split()
+            for j in range(colA):
+                matrixA[i].append(float(numbers[j]))
+
+        print(f"The result is:\n{determinant(matrixA)}\n")
 
     elif choice == '0':
         running = False
